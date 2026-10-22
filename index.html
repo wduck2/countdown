@@ -9,11 +9,14 @@
 <body>
   <div class="container">
     <header>
-      <h1>Event Countdown</h1>
+      <div class="header-top">
+        <h1>Event Countdown</h1>
+        <button type="button" id="add-btn" class="add-btn" title="Add new event">+</button>
+      </div>
       <p>Track the time remaining until your important events.</p>
     </header>
 
-    <section class="add-event">
+    <section class="add-event" id="add-event-section" style="display: none;">
       <h2 id="form-title">Add New Event</h2>
       <form id="event-form">
         <div class="form-group">
