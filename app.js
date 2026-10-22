@@ -14,6 +14,7 @@ const timeInput = document.getElementById("event-time");
 const unitInput = document.getElementById("event-unit");
 const formTitle = document.getElementById("form-title");
 const submitBtn = document.getElementById("submit-btn");
+const cancelBtn = document.getElementById("cancel-btn");
 
 let editingId = null;
 
@@ -232,6 +233,7 @@ function startEdit(id) {
 
   formTitle.textContent = "Edit Event";
   submitBtn.textContent = "Update Event";
+  cancelBtn.style.display = "inline-block";
   nameInput.focus();
 
   // Scroll to form
@@ -261,17 +263,29 @@ function resetForm() {
   form.reset();
   formTitle.textContent = "Add New Event";
   submitBtn.textContent = "Add Event";
+  cancelBtn.style.display = "none";
   dateInput.valueAsDate = new Date();
   nameInput.focus();
 }
 
 // Delete event
 function deleteEvent(id) {
+  const event = events.find(e => e.id === id);
+  if (!event) return;
+
+  const confirmed = confirm(`Delete "${event.name}"? This cannot be undone.`);
+  if (!confirmed) return;
+
   events = events.filter(e => e.id !== id);
   if (editingId === id) resetForm();
   saveEvents();
   renderEvents();
 }
+
+// Cancel edit
+cancelBtn.addEventListener("click", () => {
+  resetForm();
+});
 
 // Form submit handler
 form.addEventListener("submit", (e) => {
