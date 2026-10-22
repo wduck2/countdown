@@ -15,6 +15,8 @@ const unitInput = document.getElementById("event-unit");
 const formTitle = document.getElementById("form-title");
 const submitBtn = document.getElementById("submit-btn");
 const cancelBtn = document.getElementById("cancel-btn");
+const addBtn = document.getElementById("add-btn");
+const addEventSection = document.getElementById("add-event-section");
 
 let editingId = null;
 
@@ -234,6 +236,7 @@ function startEdit(id) {
   formTitle.textContent = "Edit Event";
   submitBtn.textContent = "Update Event";
   cancelBtn.style.display = "inline-block";
+  addEventSection.style.display = "block";
   nameInput.focus();
 
   // Scroll to form
@@ -264,6 +267,7 @@ function resetForm() {
   formTitle.textContent = "Add New Event";
   submitBtn.textContent = "Add Event";
   cancelBtn.style.display = "none";
+  addEventSection.style.display = "none";
   dateInput.valueAsDate = new Date();
   nameInput.focus();
 }
@@ -281,6 +285,17 @@ function deleteEvent(id) {
   saveEvents();
   renderEvents();
 }
+
+// Show form to add new event
+addBtn.addEventListener("click", () => {
+  if (editingId) resetForm();
+  addEventSection.style.display = "block";
+  cancelBtn.style.display = "inline-block";
+  formTitle.textContent = "Add New Event";
+  submitBtn.textContent = "Add Event";
+  nameInput.focus();
+  addEventSection.scrollIntoView({ behavior: "smooth" });
+});
 
 // Cancel edit
 cancelBtn.addEventListener("click", () => {
