@@ -97,6 +97,7 @@ function renderEvents() {
           <button class="delete-btn" data-id="${event.id}">Delete</button>
         </div>
         <div class="event-datetime">${datetimeStr}</div>
+        ${event.time ? `
         <div class="countdown">
           <div class="time-unit">
             <span class="time-value">${remaining.days}</span>
@@ -115,6 +116,14 @@ function renderEvents() {
             <span class="time-label">Seconds</span>
           </div>
         </div>
+        ` : `
+        <div class="countdown days-only">
+          <div class="time-unit">
+            <span class="time-value">${remaining.days}</span>
+            <span class="time-label">Days</span>
+          </div>
+        </div>
+        `}
       </div>
     `;
   }).join("");
