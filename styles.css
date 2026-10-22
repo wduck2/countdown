@@ -21,41 +21,40 @@ body {
 header {
   text-align: center;
   margin-bottom: 1.75rem;
-  position: relative;
 }
 
-.header-top {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  position: relative;
-}
-
-.add-btn {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  min-height: 44px;
+button.add-btn {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  min-height: 36px;
   padding: 0;
-  border-radius: 50%;
-  font-size: 1.75rem;
-  font-weight: 300;
+  margin: 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  font-weight: 400;
   line-height: 1;
   background: #3b82f6;
   color: white;
-  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.35);
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.add-btn:hover {
+button.add-btn:hover,
+button.add-btn:active {
   background: #2563eb;
 }
 
