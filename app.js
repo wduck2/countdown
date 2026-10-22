@@ -287,15 +287,25 @@ function deleteEvent(id) {
   renderEvents();
 }
 
-// Show form to add new event
-addBtn.addEventListener("click", () => {
-  if (editingId) resetForm();
-  addEventSection.style.display = "block";
-  cancelBtn.style.display = "inline-block";
+function openAddForm() {
+  if (editingId) {
+    editingId = null;
+    form.reset();
+    dateInput.valueAsDate = new Date();
+  }
   formTitle.textContent = "Add New Event";
   submitBtn.textContent = "Add Event";
-  nameInput.focus();
-  addEventSection.scrollIntoView({ behavior: "smooth" });
+  cancelBtn.style.display = "inline-block";
+  addEventSection.style.display = "block";
+  addEventSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  setTimeout(() => nameInput.focus(), 300);
+}
+
+// Show form to add new event. Listen on the document so iOS taps
+// still register if the button moves or is restyled.
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#add-btn")) return;
+  openAddForm();
 });
 
 // Cancel edit
