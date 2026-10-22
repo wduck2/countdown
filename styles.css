@@ -134,6 +134,26 @@ button:hover {
   flex: 1;
 }
 
+.edit-btn {
+  background: #10b981;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.875rem;
+  width: auto;
+  min-height: 36px;
+  flex-shrink: 0;
+  margin-right: 0.4rem;
+}
+
+.edit-btn:hover {
+  background: #059669;
+}
+
+.event-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 .delete-btn {
   background: #ef4444;
   padding: 0.5rem 0.85rem;
