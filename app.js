@@ -12,6 +12,10 @@ const nameInput = document.getElementById("event-name");
 const dateInput = document.getElementById("event-date");
 const timeInput = document.getElementById("event-time");
 const unitInput = document.getElementById("event-unit");
+const formTitle = document.getElementById("form-title");
+const submitBtn = document.getElementById("submit-btn");
+
+let editingId = null;
 
 // Load events from localStorage
 function loadEvents() {
@@ -118,7 +122,10 @@ function renderEvents() {
         <div class="event-card past-event">
           <div class="event-header">
             <div class="event-name">${escapeHtml(event.name)}</div>
-            <button class="delete-btn" data-id="${event.id}">Delete</button>
+            <div class="event-actions">
+              <button class="edit-btn" data-id="${event.id}">Edit</button>
+              <button class="delete-btn" data-id="${event.id}">Delete</button>
+            </div>
           </div>
           <div class="event-datetime">${datetimeStr}</div>
           <div class="past-label">This event has already started / passed</div>
@@ -130,7 +137,10 @@ function renderEvents() {
       <div class="event-card">
         <div class="event-header">
           <div class="event-name">${escapeHtml(event.name)}</div>
-          <button class="delete-btn" data-id="${event.id}">Delete</button>
+          <div class="event-actions">
+            <button class="edit-btn" data-id="${event.id}">Edit</button>
+            <button class="delete-btn" data-id="${event.id}">Delete</button>
+          </div>
         </div>
         <div class="event-datetime">${datetimeStr}</div>
         ${unit === "default" ? (event.time ? `
@@ -178,6 +188,14 @@ function renderEvents() {
       deleteEvent(id);
     });
   });
+
+  // Attach edit listeners
+  document.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      startEdit(id);
+    });
+  });
 }
 
 // Escape HTML to prevent XSS
@@ -201,9 +219,56 @@ function addEvent(name, date, time, unit) {
   renderEvents();
 }
 
+// Start editing an event
+function startEdit(id) {
+  const event = events.find(e => e.id === id);
+  if (!event) return;
+
+  editingId = id;
+  nameInput.value = event.name;
+  dateInput.value = event.date;
+  timeInput.value = event.time || "";
+  unitInput.value = event.unit || "default";
+
+  formTitle.textContent = "Edit Event";
+  submitBtn.textContent = "Update Event";
+  nameInput.focus();
+
+  // Scroll to form
+  document.querySelector(".add-event").scrollIntoView({ behavior: "smooth" });
+}
+
+// Update existing event
+function updateEvent(id, name, date, time, unit) {
+  const index = events.findIndex(e => e.id === id);
+  if (index === -1) return;
+
+  events[index] = {
+    ...events[index],
+    name: name.trim(),
+    date,
+    time: time || null,
+    unit: unit || "default"
+  };
+  saveEvents();
+  renderEvents();
+  resetForm();
+}
+
+// Reset form to add mode
+function resetForm() {
+  editingId = null;
+  form.reset();
+  formTitle.textContent = "Add New Event";
+  submitBtn.textContent = "Add Event";
+  dateInput.valueAsDate = new Date();
+  nameInput.focus();
+}
+
 // Delete event
 function deleteEvent(id) {
   events = events.filter(e => e.id !== id);
+  if (editingId === id) resetForm();
   saveEvents();
   renderEvents();
 }
@@ -218,11 +283,12 @@ form.addEventListener("submit", (e) => {
 
   if (!name || !date) return;
 
-  addEvent(name, date, time, unit);
-
-  // Reset form
-  form.reset();
-  nameInput.focus();
+  if (editingId) {
+    updateEvent(editingId, name, date, time, unit);
+  } else {
+    addEvent(name, date, time, unit);
+    resetForm();
+  }
 });
 
 // Update countdowns every second
