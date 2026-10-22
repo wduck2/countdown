@@ -17,6 +17,7 @@ const submitBtn = document.getElementById("submit-btn");
 const cancelBtn = document.getElementById("cancel-btn");
 const addBtn = document.getElementById("add-btn");
 const addEventSection = document.getElementById("add-event-section");
+const closeBtn = document.getElementById("close-btn");
 
 let editingId = null;
 
@@ -299,6 +300,11 @@ addBtn.addEventListener("click", () => {
 
 // Cancel edit
 cancelBtn.addEventListener("click", () => {
+  resetForm();
+});
+
+// Close form with X
+closeBtn.addEventListener("click", () => {
   resetForm();
 });
 
