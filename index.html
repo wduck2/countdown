@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Countdown</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Event Countdown</h1>
+      <p>Track the time remaining until your important events.</p>
+    </header>
+
+    <section class="add-event">
+      <h2>Add New Event</h2>
+      <form id="event-form">
+        <div class="form-group">
+          <label for="event-name">Event Name</label>
+          <input type="text" id="event-name" required placeholder="e.g. Birthday Party">
+        </div>
+        <div class="form-group">
+          <label for="event-date">Date</label>
+          <input type="date" id="event-date" required>
+        </div>
+        <div class="form-group">
+          <label for="event-time">Time (optional)</label>
+          <input type="time" id="event-time">
+        </div>
+        <button type="submit">Add Event</button>
+      </form>
+    </section>
+
+    <section class="events-list">
+      <h2>Your Events</h2>
+      <div id="events-container">
+        <!-- Events will be rendered here -->
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
