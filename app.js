@@ -11,6 +11,7 @@ const eventsContainer = document.getElementById("events-container");
 const nameInput = document.getElementById("event-name");
 const dateInput = document.getElementById("event-date");
 const timeInput = document.getElementById("event-time");
+const unitInput = document.getElementById("event-unit");
 
 // Load events from localStorage
 function loadEvents() {
@@ -41,7 +42,39 @@ function formatDateTime(dateStr, timeStr) {
   return formatted;
 }
 
-// Calculate time remaining
+function getDisplayValue(diffMs, unit) {
+  const absDiff = Math.max(0, diffMs);
+  const totalSeconds = Math.floor(absDiff / 1000);
+  const totalMinutes = Math.floor(absDiff / (1000 * 60));
+  const totalHours = Math.floor(absDiff / (1000 * 60 * 60));
+  const totalDays = Math.floor(absDiff / (1000 * 60 * 60 * 24));
+  // Approximate months (30.44 days) and years (365.25 days)
+  const totalMonths = Math.floor(absDiff / (1000 * 60 * 60 * 24 * 30.44));
+  const totalYears = Math.floor(absDiff / (1000 * 60 * 60 * 24 * 365.25));
+
+  switch (unit) {
+    case "years": return totalYears;
+    case "months": return totalMonths;
+    case "days": return totalDays;
+    case "hours": return totalHours;
+    case "minutes": return totalMinutes;
+    case "seconds": return totalSeconds;
+    default: return null;
+  }
+}
+
+function getUnitLabel(unit) {
+  const labels = {
+    years: "Years",
+    months: "Months",
+    days: "Days",
+    hours: "Hours",
+    minutes: "Minutes",
+    seconds: "Seconds"
+  };
+  return labels[unit] || "";
+}
+
 function getTimeRemaining(targetDate) {
   const now = new Date();
   const diff = targetDate - now;
@@ -76,6 +109,9 @@ function renderEvents() {
     const target = new Date(event.date + (event.time ? "T" + event.time : "T00:00"));
     const remaining = getTimeRemaining(target);
     const datetimeStr = formatDateTime(event.date, event.time);
+    const unit = event.unit || "default";
+    const displayValue = unit === "default" ? null : getDisplayValue(target - new Date(), unit);
+    const unitLabel = getUnitLabel(unit);
 
     if (remaining.past) {
       return `
@@ -97,7 +133,7 @@ function renderEvents() {
           <button class="delete-btn" data-id="${event.id}">Delete</button>
         </div>
         <div class="event-datetime">${datetimeStr}</div>
-        ${event.time ? `
+        ${unit === "default" ? (event.time ? `
         <div class="countdown">
           <div class="time-unit">
             <span class="time-value">${remaining.days}</span>
@@ -123,6 +159,13 @@ function renderEvents() {
             <span class="time-label">Days</span>
           </div>
         </div>
+        `) : `
+        <div class="countdown days-only">
+          <div class="time-unit">
+            <span class="time-value">${displayValue}</span>
+            <span class="time-label">${unitLabel}</span>
+          </div>
+        </div>
         `}
       </div>
     `;
@@ -145,12 +188,13 @@ function escapeHtml(text) {
 }
 
 // Add new event
-function addEvent(name, date, time) {
+function addEvent(name, date, time, unit) {
   const event = {
     id: Date.now().toString(),
     name: name.trim(),
     date,
-    time: time || null
+    time: time || null,
+    unit: unit || "default"
   };
   events.push(event);
   saveEvents();
@@ -170,10 +214,11 @@ form.addEventListener("submit", (e) => {
   const name = nameInput.value;
   const date = dateInput.value;
   const time = timeInput.value;
+  const unit = unitInput.value;
 
   if (!name || !date) return;
 
-  addEvent(name, date, time);
+  addEvent(name, date, time, unit);
 
   // Reset form
   form.reset();
