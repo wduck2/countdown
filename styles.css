@@ -77,38 +77,9 @@ header p {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.form-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+h2 {
   margin-bottom: 1rem;
-}
-
-.form-header h2 {
-  margin-bottom: 0;
-}
-
-.close-btn {
-  width: 36px;
-  height: 36px;
-  min-height: 36px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: 300;
-  line-height: 1;
-  background: #f3f4f6;
-  color: #6b7280;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-btn:hover {
-  background: #e5e7eb;
-  color: #374151;
+  font-size: 1.3rem;
 }
 
 .form-group {
