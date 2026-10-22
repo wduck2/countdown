@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Countdown</title>
+  <style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #f4f7fb;
+  color: #1a1a1a;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+.container {
+  max-width: 800px;
+  margin: 1.25rem auto;
+  padding: 0 1rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+button.add-btn {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  min-height: 36px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.35);
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.add-btn:hover,
+button.add-btn:active {
+  background: #2563eb;
+}
+
+header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+  color: #111827;
+}
+
+header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.add-event, .events-list {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"] {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.85rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  min-height: 48px;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.85rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  min-height: 48px;
+  box-sizing: border-box;
+  background: white;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.9rem 1.25rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  min-height: 48px;
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.form-actions button {
+  flex: 1;
+  min-width: 120px;
+}
+
+.cancel-btn {
+  background: #6b7280 !important;
+}
+
+.cancel-btn:hover {
+  background: #4b5563 !important;
+}
+
+.event-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fafafa;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.event-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  word-break: break-word;
+  flex: 1;
+}
+
+.edit-btn {
+  background: #10b981;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.875rem;
+  width: auto;
+  min-height: 36px;
+  flex-shrink: 0;
+  margin-right: 0.4rem;
+}
+
+.edit-btn:hover {
+  background: #059669;
+}
+
+.event-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  background: #ef4444;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.875rem;
+  width: auto;
+  min-height: 36px;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+.event-datetime {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.countdown.days-only {
+  grid-template-columns: 1fr;
+  max-width: 120px;
+}
+
+.time-unit {
+  min-width: 0;
+}
+
+.time-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  display: block;
+  line-height: 1.1;
+}
+
+.time-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.15rem;
+}
+
+.past-event {
+  opacity: 0.7;
+}
+
+.past-label {
+  color: #ef4444;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
+/* Larger screens */
+@media (min-width: 640px) {
+  .container {
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+
+  header h1 {
+    font-size: 2.5rem;
+  }
+
+  header p {
+    font-size: 1rem;
+  }
+
+  .add-event, .events-list {
+    padding: 1.5rem;
+  }
+
+  button {
+    width: auto;
+  }
+
+  .countdown {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+
+  .time-unit {
+    min-width: 70px;
+  }
+
+  .time-value {
+    font-size: 1.75rem;
+  }
+
+  .time-label {
+    font-size: 0.75rem;
+  }
+}
+  </style>
+</head>
+<body>
+  <button type="button" id="add-btn" class="add-btn" title="Add new event" aria-label="Add new event">+</button>
+  <div class="container">
+    <header>
+      <h1>Event Countdown</h1>
+      <p>Track the time remaining until your important events.</p>
+    </header>
+
+    <section class="add-event" id="add-event-section" style="display: none;">
+      <h2 id="form-title">Add New Event</h2>
+      <form id="event-form">
+        <div class="form-group">
+          <label for="event-name">Event Name</label>
+          <input type="text" id="event-name" required placeholder="e.g. Birthday Party">
+        </div>
+        <div class="form-group">
+          <label for="event-date">Date</label>
+          <input type="date" id="event-date" required>
+        </div>
+        <div class="form-group">
+          <label for="event-time">Time (optional)</label>
+          <input type="time" id="event-time">
+        </div>
+        <div class="form-group">
+          <label for="event-unit">Countdown Display</label>
+          <select id="event-unit">
+            <option value="default">Default</option>
+            <option value="years">Years</option>
+            <option value="months">Months</option>
+            <option value="days">Days</option>
+            <option value="hours">Hours</option>
+            <option value="minutes">Minutes</option>
+            <option value="seconds">Seconds</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="submit-btn">Add Event</button>
+          <button type="button" id="cancel-btn" class="cancel-btn" style="display: none;">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="events-list">
+      <h2>Your Events</h2>
+      <div id="events-container">
+        <!-- Events will be rendered here -->
+      </div>
+    </section>
+  </div>
+
+  <script>
+// Simple Event Countdown App
+// Stores events in localStorage so they persist between visits
+
+const STORAGE_KEY = "event-countdowns";
+
+let events = [];
+
+// DOM elements
+const form = document.getElementById("event-form");
+const eventsContainer = document.getElementById("events-container");
+const nameInput = document.getElementById("event-name");
+const dateInput = document.getElementById("event-date");
+const timeInput = document.getElementById("event-time");
+const unitInput = document.getElementById("event-unit");
+const formTitle = document.getElementById("form-title");
+const submitBtn = document.getElementById("submit-btn");
+const cancelBtn = document.getElementById("cancel-btn");
+const addBtn = document.getElementById("add-btn");
+const addEventSection = document.getElementById("add-event-section");
+
+let editingId = null;
+
+// Load events from localStorage
+function loadEvents() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  events = saved ? JSON.parse(saved) : [];
+}
+
+// Save events to localStorage
+function saveEvents() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+}
+
+// Format a date for display
+function formatDateTime(dateStr, timeStr) {
+  const date = new Date(dateStr + (timeStr ? "T" + timeStr : "T00:00"));
+  const options = { 
+    weekday: "long", 
+    year: "numeric", 
+    month: "long", 
+    day: "numeric" 
+  };
+  let formatted = date.toLocaleDateString(undefined, options);
+  if (timeStr) {
+    formatted += " at " + timeStr;
+  } else {
+    formatted += " (all day)";
+  }
+  return formatted;
+}
+
+function getDisplayValue(diffMs, unit) {
+  const absDiff = Math.max(0, diffMs);
+  const totalSeconds = Math.floor(absDiff / 1000);
+  const totalMinutes = Math.floor(absDiff / (1000 * 60));
+  const totalHours = Math.floor(absDiff / (1000 * 60 * 60));
+  const totalDays = Math.floor(absDiff / (1000 * 60 * 60 * 24));
+  // Approximate months (30.44 days) and years (365.25 days)
+  const totalMonths = Math.floor(absDiff / (1000 * 60 * 60 * 24 * 30.44));
+  const totalYears = Math.floor(absDiff / (1000 * 60 * 60 * 24 * 365.25));
+
+  switch (unit) {
+    case "years": return totalYears;
+    case "months": return totalMonths;
+    case "days": return totalDays;
+    case "hours": return totalHours;
+    case "minutes": return totalMinutes;
+    case "seconds": return totalSeconds;
+    default: return null;
+  }
+}
+
+function getUnitLabel(unit) {
+  const labels = {
+    years: "Years",
+    months: "Months",
+    days: "Days",
+    hours: "Hours",
+    minutes: "Minutes",
+    seconds: "Seconds"
+  };
+  return labels[unit] || "";
+}
+
+function getTimeRemaining(targetDate) {
+  const now = new Date();
+  const diff = targetDate - now;
+
+  if (diff <= 0) {
+    return { past: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  const seconds = Math.floor((diff / 1000) % 60);
+  const minutes = Math.floor((diff / 1000 / 60) % 60);
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  return { past: false, days, hours, minutes, seconds };
+}
+
+// Render all events
+function renderEvents() {
+  if (events.length === 0) {
+    eventsContainer.innerHTML = '<div class="empty-state">No events yet. Add one above!</div>';
+    return;
+  }
+
+  // Sort by date (soonest first)
+  const sorted = [...events].sort((a, b) => {
+    const dateA = new Date(a.date + (a.time ? "T" + a.time : "T00:00"));
+    const dateB = new Date(b.date + (b.time ? "T" + b.time : "T00:00"));
+    return dateA - dateB;
+  });
+
+  eventsContainer.innerHTML = sorted.map(event => {
+    const target = new Date(event.date + (event.time ? "T" + event.time : "T00:00"));
+    const remaining = getTimeRemaining(target);
+    const datetimeStr = formatDateTime(event.date, event.time);
+    const unit = event.unit || "default";
+    const displayValue = unit === "default" ? null : getDisplayValue(target - new Date(), unit);
+    const unitLabel = getUnitLabel(unit);
+
+    if (remaining.past) {
+      return `
+        <div class="event-card past-event">
+          <div class="event-header">
+            <div class="event-name">${escapeHtml(event.name)}</div>
+            <div class="event-actions">
+              <button class="edit-btn" data-id="${event.id}">Edit</button>
+              <button class="delete-btn" data-id="${event.id}">Delete</button>
+            </div>
+          </div>
+          <div class="event-datetime">${datetimeStr}</div>
+          <div class="past-label">This event has already started / passed</div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="event-card">
+        <div class="event-header">
+          <div class="event-name">${escapeHtml(event.name)}</div>
+          <div class="event-actions">
+            <button class="edit-btn" data-id="${event.id}">Edit</button>
+            <button class="delete-btn" data-id="${event.id}">Delete</button>
+          </div>
+        </div>
+        <div class="event-datetime">${datetimeStr}</div>
+        ${unit === "default" ? (event.time ? `
+        <div class="countdown">
+          <div class="time-unit">
+            <span class="time-value">${remaining.days}</span>
+            <span class="time-label">Days</span>
+          </div>
+          <div class="time-unit">
+            <span class="time-value">${String(remaining.hours).padStart(2, "0")}</span>
+            <span class="time-label">Hours</span>
+          </div>
+          <div class="time-unit">
+            <span class="time-value">${String(remaining.minutes).padStart(2, "0")}</span>
+            <span class="time-label">Minutes</span>
+          </div>
+          <div class="time-unit">
+            <span class="time-value">${String(remaining.seconds).padStart(2, "0")}</span>
+            <span class="time-label">Seconds</span>
+          </div>
+        </div>
+        ` : `
+        <div class="countdown days-only">
+          <div class="time-unit">
+            <span class="time-value">${remaining.days}</span>
+            <span class="time-label">Days</span>
+          </div>
+        </div>
+        `) : `
+        <div class="countdown days-only">
+          <div class="time-unit">
+            <span class="time-value">${displayValue}</span>
+            <span class="time-label">${unitLabel}</span>
+          </div>
+        </div>
+        `}
+      </div>
+    `;
+  }).join("");
+
+  // Attach delete listeners
+  document.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      deleteEvent(id);
+    });
+  });
+
+  // Attach edit listeners
+  document.querySelectorAll(".edit-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      startEdit(id);
+    });
+  });
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Add new event
+function addEvent(name, date, time, unit) {
+  const event = {
+    id: Date.now().toString(),
+    name: name.trim(),
+    date,
+    time: time || null,
+    unit: unit || "default"
+  };
+  events.push(event);
+  saveEvents();
+  renderEvents();
+}
+
+// Start editing an event
+function startEdit(id) {
+  const event = events.find(e => e.id === id);
+  if (!event) return;
+
+  editingId = id;
+  nameInput.value = event.name;
+  dateInput.value = event.date;
+  timeInput.value = event.time || "";
+  unitInput.value = event.unit || "default";
+
+  formTitle.textContent = "Edit Event";
+  submitBtn.textContent = "Update Event";
+  cancelBtn.style.display = "inline-block";
+  addEventSection.style.display = "block";
+  nameInput.focus();
+
+  // Scroll to form
+  document.querySelector(".add-event").scrollIntoView({ behavior: "smooth" });
+}
+
+// Update existing event
+function updateEvent(id, name, date, time, unit) {
+  const index = events.findIndex(e => e.id === id);
+  if (index === -1) return;
+
+  events[index] = {
+    ...events[index],
+    name: name.trim(),
+    date,
+    time: time || null,
+    unit: unit || "default"
+  };
+  saveEvents();
+  renderEvents();
+  resetForm();
+}
+
+// Reset form to add mode
+function resetForm() {
+  editingId = null;
+  form.reset();
+  formTitle.textContent = "Add New Event";
+  submitBtn.textContent = "Add Event";
+  cancelBtn.style.display = "none";
+  addEventSection.style.display = "none";
+  dateInput.valueAsDate = new Date();
+  nameInput.focus();
+}
+
+// Delete event
+function deleteEvent(id) {
+  const event = events.find(e => e.id === id);
+  if (!event) return;
+
+  const confirmed = confirm(`Delete "${event.name}"? This cannot be undone.`);
+  if (!confirmed) return;
+
+  events = events.filter(e => e.id !== id);
+  if (editingId === id) resetForm();
+  saveEvents();
+  renderEvents();
+}
+
+function openAddForm() {
+  if (editingId) {
+    editingId = null;
+    form.reset();
+    dateInput.valueAsDate = new Date();
+  }
+  formTitle.textContent = "Add New Event";
+  submitBtn.textContent = "Add Event";
+  cancelBtn.style.display = "inline-block";
+  addEventSection.style.display = "block";
+  addEventSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  setTimeout(() => nameInput.focus(), 300);
+}
+
+// Show form to add new event. Listen on the document so iOS taps
+// still register if the button moves or is restyled.
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#add-btn")) return;
+  openAddForm();
+});
+
+// Cancel edit
+cancelBtn.addEventListener("click", () => {
+  resetForm();
+});
+
+// Form submit handler
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const name = nameInput.value;
+  const date = dateInput.value;
+  const time = timeInput.value;
+  const unit = unitInput.value;
+
+  if (!name || !date) return;
+
+  if (editingId) {
+    updateEvent(editingId, name, date, time, unit);
+  } else {
+    addEvent(name, date, time, unit);
+    resetForm();
+  }
+});
+
+// Update countdowns every second
+function startTimer() {
+  setInterval(renderEvents, 1000);
+}
+
+// Initialize
+loadEvents();
+renderEvents();
+startTimer();
+
+// Set default date to today
+dateInput.valueAsDate = new Date();
+  </script>
+</body>
+</html>
