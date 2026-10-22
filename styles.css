@@ -107,8 +107,23 @@ button {
   width: 100%;
 }
 
-button:hover {
-  background: #2563eb;
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.form-actions button {
+  flex: 1;
+  min-width: 120px;
+}
+
+.cancel-btn {
+  background: #6b7280 !important;
+}
+
+.cancel-btn:hover {
+  background: #4b5563 !important;
 }
 
 .event-card {
